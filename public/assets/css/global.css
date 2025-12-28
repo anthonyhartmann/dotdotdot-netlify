@@ -1,3 +1,10 @@
+body {
+  font-family: "Arial", sans-serif;
+  font-size: 14px;
+  color: #3b3b3b;
+}
+
+/* home */
 .navItem {
   list-style-type: none;
   display: flex;
@@ -17,11 +24,49 @@
   gap: 4rem;
 }
 
-.navItem > a {
+/* events */
+
+.grid {
+  display: grid;
+  grid-template-columns: 30rem 50rem 1fr;
 }
 
-body {
-  font-family: "Arial", sans-serif;
-  font-size: 14px;
-  color: #3b3b3b;
+.title {
+  text-align: center;
+  font-size: 40px;
+}
+
+.pastEventsSection {
+  margin-left: 4rem;
+  margin-top: 4rem;
+}
+
+.upcomingEventsSection {
+  margin-top: 4rem;
+}
+
+.pastEvents {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upcomingEvents {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upcomingEvent {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.upcomingEventImage {
+  width: 8rem;
+}
+
+.pastEventImage {
+  width: 4rem;
 }

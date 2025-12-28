@@ -2,13 +2,178 @@
 
 <html>
   <head>
-    <link rel="stylesheet" href="./assets/css/global.css" />
+    <link rel="stylesheet" href="../assets/css/global.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.cdnfonts.com/css/arial-2" rel="stylesheet" />
+    <script src="https://unpkg.com/@sanity/client/browser.js"></script>
+    <script type="module">
+      import { createClient } from "https://cdn.skypack.dev/@sanity/client";
+
+      const client = createClient({
+        projectId: "xr7hvhwe",
+        dataset: "production",
+        apiVersion: "2025-12-28",
+        useCdn: true,
+        token: "fake",
+      });
+
+      const events = await client.fetch(`*[_type == "event"] {
+        ..., // include all fields
+        images[] {        // for each element in the images array
+          ...,            // include all image fields
+          "url": asset->url  // expand the asset reference to its URL
+        }
+      }`);
+      events.forEach((event) => {
+        debugger;
+        const currentDate = new Date();
+
+        const isDatetimeUpcoming =
+          event.datetime !== undefined &&
+          currentDate.getTime() < new Date(event.datetime).getTime();
+
+        currentDate.setHours(0, 0, 0, 0);
+        const isDateUpcoming =
+          event.datetime === undefined &&
+          currentDate <= new Date(event.date).getTime();
+        const isUpcoming = isDateUpcoming || isDatetimeUpcoming;
+        console.log(isUpcoming);
+        if (!isUpcoming) {
+          const pastEvents = document.getElementById("past_events");
+          const eventContainer = document.createElement("div");
+          eventContainer.className = "pastEvent";
+
+          const title = document.createElement("p");
+          const formattedDate = event.datetime
+            ? new Date(event.datetime).toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true, // 12-hour format (AM/PM)
+                month: "long", // full month name
+                day: "numeric",
+                year: "numeric",
+              })
+            : new Date(event.date).toLocaleTimeString("en-US", {
+                month: "long", // full month name
+                day: "numeric",
+                year: "numeric",
+              });
+          title.textContent = `${event.title}, ${formattedDate.toLowerCase()}`;
+
+          const group = document.createElement("div");
+          group.textContent = `${event.group} event`;
+
+          const image = document.createElement("img");
+          image.setAttribute("src", event.images[0].url);
+          image.className = "pastEventImage";
+
+          const meta = document.createElement("span");
+          const info = document.createElement("a");
+          info.textContent = "info";
+          const album = document.createElement("a");
+          album.textContent = "album";
+          meta.appendChild(info);
+          meta.appendChild(album);
+
+          const rightSide = document.createElement("div");
+          rightSide.className = "eventInfo";
+          rightSide.appendChild(title);
+          rightSide.appendChild(group);
+          rightSide.appendChild(meta);
+
+          eventContainer.appendChild(image);
+          eventContainer.appendChild(rightSide);
+
+          pastEvents.appendChild(eventContainer);
+        } else {
+          const upcomingEvents = document.getElementById("upcoming_events");
+          const eventContainer = document.createElement("div");
+          eventContainer.className = "upcomingEvent";
+
+          const title = document.createElement("p");
+          const formattedDate = event.datetime
+            ? new Date(event.datetime).toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true, // 12-hour format (AM/PM)
+                month: "long", // full month name
+                day: "numeric",
+                year: "numeric",
+              })
+            : new Date(event.date).toLocaleTimeString("en-US", {
+                month: "long", // full month name
+                day: "numeric",
+                year: "numeric",
+              });
+          title.textContent = `${event.title}, ${formattedDate.toLowerCase()}`;
+
+          const description = document.createElement("p");
+          description.textContent = event.description;
+
+          const group = document.createElement("div");
+          group.textContent = `${event.group} event`;
+
+          const rsvp = document.createElement("a");
+          rsvp.textContent = "rsvp here";
+          rsvp.href = "./";
+
+          const image = document.createElement("img");
+          image.setAttribute("src", event.images[0].url);
+          image.className = "upcomingEventImage";
+
+          const rightSide = document.createElement("div");
+          rightSide.className = "eventInfo";
+
+          rightSide.appendChild(title);
+          rightSide.appendChild(description);
+          rightSide.appendChild(group);
+          rightSide.appendChild(rsvp);
+
+          eventContainer.appendChild(image);
+          eventContainer.appendChild(rightSide);
+
+          upcomingEvents.appendChild(eventContainer);
+        }
+      });
+    </script>
   </head>
   <body>
-    hi
-    <a href="/">back</a>
+    <div class="grid">
+      <section class="pastEventsSection">
+        <h1 class="title">past events</h1>
+        <div id="past_events" class="pastEvents" />
+      </section>
+
+      <section class="upcomingEventsSection">
+        <h1 class="title">upcoming</h1>
+        <div id="upcoming_events" class="upcomingEvents" />
+      </section>
+
+      <nav class="nav">
+        <ul class="navList">
+          <li class="navItem">
+            <a> grouphug </a>
+            <a> mmyope books </a>
+            <a> newsletter </a>
+            <a> film </a>
+          </li>
+          <li class="navItem">
+            <a> platformradio radio </a>
+            <a> signal </a>
+            <a> archive </a>
+          </li>
+          <li class="navItem">
+            <a> about </a>
+            <a> info </a>
+            <a> resources </a>
+          </li>
+          <li class="navItem">
+            <a href="./events"> events </a>
+            <a> shop </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
   </body>
 </html>
